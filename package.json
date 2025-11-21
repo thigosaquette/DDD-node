@@ -1,0 +1,31 @@
+{
+  "name": "ddd-node",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000D\u0000D\u0000D\u0000-\u0000n\u0000o\u0000d\u0000e\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thigosaquette/DDD-node.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/thigosaquette/DDD-node/issues"
+  },
+  "homepage": "https://github.com/thigosaquette/DDD-node#readme",
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3",
+    "vite-tsconfig-paths": "5.1.4",
+    "vitest": "4.0.13"
+  },
+  "dependencies": {
+    "dayjs": "1.11.19"
+  }
+}
