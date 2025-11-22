@@ -56,12 +56,12 @@ export class Question extends Entity<QuestionRequiredProps> {
       throw new Error('Invalid content length.')
     }
 
-    this.requiredProps.content = this.content
+    this.requiredProps.content = content
     this.touch()
   }
 
   set title(title: string) {
-    this.requiredProps.title = this.title
+    this.requiredProps.title = title
     this.requiredProps.slug = Slug.createFromText(title)
     this.touch()
   }
