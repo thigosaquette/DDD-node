@@ -40,7 +40,7 @@ export class Answer extends Entity<AnswerRequiredProps> {
       throw new Error('Invalid content length.')
     }
 
-    this.requiredProps.content = this.content
+    this.requiredProps.content = content
     this.touch()
   }
 
