@@ -1,8 +1,8 @@
-import { Entity } from "@/core/entities/entity"
-import { Optional } from "@/core/types/optional"
-import { UniqueEntityID } from "@/core/value-objects/unique-entity-id"
+import { Entity } from '@/core/entities/entity'
+import { Optional } from '@/core/types/optional'
+import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 
-interface AnswerRequiredProps {
+export interface AnswerRequiredProps {
   authorId: UniqueEntityID
   questionId: UniqueEntityID
   content: string
@@ -49,13 +49,16 @@ export class Answer extends Entity<AnswerRequiredProps> {
   }
 
   static create(
-    requiredProps: Optional<AnswerRequiredProps, 'createdAt'>, 
-    id?: UniqueEntityID
+    requiredProps: Optional<AnswerRequiredProps, 'createdAt'>,
+    id?: UniqueEntityID,
   ) {
-    const answer = new Answer({
-      ...requiredProps,
-      createdAt: new Date(),
-    }, id)
+    const answer = new Answer(
+      {
+        ...requiredProps,
+        createdAt: new Date(),
+      },
+      id,
+    )
 
     return answer
   }

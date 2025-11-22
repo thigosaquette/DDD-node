@@ -1,10 +1,10 @@
-import { Slug } from "../value-objects/slug"
-import { Entity } from "@/core/entities/entity"
-import { UniqueEntityID } from "@/core/value-objects/unique-entity-id"
-import { Optional } from "@/core/types/optional"
-import dayjs from "dayjs"
+import { Slug } from './value-objects/slug'
+import { Entity } from '@/core/entities/entity'
+import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
+import { Optional } from '@/core/types/optional'
+import dayjs from 'dayjs'
 
-interface QuestionRequiredProps {
+export interface QuestionRequiredProps {
   authorId: UniqueEntityID
   bestAnswerId?: UniqueEntityID | undefined
   title: string
@@ -15,7 +15,7 @@ interface QuestionRequiredProps {
 }
 
 export class Question extends Entity<QuestionRequiredProps> {
-    get authorId() {
+  get authorId() {
     return this.requiredProps.authorId
   }
 
@@ -26,9 +26,11 @@ export class Question extends Entity<QuestionRequiredProps> {
   get title() {
     return this.requiredProps.title
   }
+
   get slug() {
     return this.requiredProps.slug
   }
+
   get content() {
     return this.requiredProps.content
   }
@@ -68,21 +70,23 @@ export class Question extends Entity<QuestionRequiredProps> {
     this.requiredProps.bestAnswerId = bestAnswerId
     this.touch()
   }
-  
 
   private touch() {
     this.requiredProps.updatedAt = new Date()
   }
 
   static create(
-    requiredProps: Optional<QuestionRequiredProps, 'slug' | 'createdAt'>, 
-    id?: UniqueEntityID
+    requiredProps: Optional<QuestionRequiredProps, 'slug' | 'createdAt'>,
+    id?: UniqueEntityID,
   ) {
-    const question = new Question({
-      ...requiredProps,
-      slug: requiredProps.slug ?? Slug.createFromText(requiredProps.title),
-      createdAt: new Date()
-    }, id)
+    const question = new Question(
+      {
+        ...requiredProps,
+        slug: requiredProps.slug ?? Slug.createFromText(requiredProps.title),
+        createdAt: new Date(),
+      },
+      id,
+    )
 
     return question
   }
