@@ -55,7 +55,7 @@ export class Answer extends Entity<AnswerRequiredProps> {
     const answer = new Answer(
       {
         ...requiredProps,
-        createdAt: new Date(),
+        createdAt: requiredProps.createdAt ?? new Date(),
       },
       id,
     )
