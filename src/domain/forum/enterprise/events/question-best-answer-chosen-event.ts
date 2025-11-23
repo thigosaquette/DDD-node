@@ -17,4 +17,3 @@ export class QuestionBestAnswerChosenEvent implements DomainEvent {
     return this.question.id
   }
 }
-
