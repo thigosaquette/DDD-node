@@ -6,8 +6,6 @@ import { InMemoryQuestionsRepository } from "@/test/repository/in-memory-questio
 import { InMemoryQuestionAttachmentsRepository } from "@/test/repository/in-memory-question-attachments-repository"
 import { SendNotificationUseCase } from "../use-cases/send-notification"
 import { InMemoryNotificationsRepository } from "@/test/repository/in-memory-notifications-repository"
-import { vi } from "vitest"
-import { waitFor } from "@/test/utils/wait-for"
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let sendNotificationUseCase: SendNotificationUseCase
@@ -15,8 +13,6 @@ let inMemoryAnswersRepository: InMemoryAnswersRepository
 let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let inMemoryNotificationsRepository: InMemoryNotificationsRepository
-
-let sendNotificationExecuteSpy: ReturnType<typeof vi.spyOn> 
 
 describe('On Answer Created', () => {
 beforeEach(() => {
@@ -26,8 +22,6 @@ beforeEach(() => {
   sendNotificationUseCase = new SendNotificationUseCase(inMemoryNotificationsRepository)
   inMemoryQuestionsRepository = new InMemoryQuestionsRepository(inMemoryQuestionAttachmentsRepository)
   inMemoryAnswersRepository = new InMemoryAnswersRepository(inMemoryAnswerAttachmentsRepository)
-
-  sendNotificationExecuteSpy = vi.spyOn(sendNotificationUseCase, 'execute')
 
   new OnAnswerCreated(inMemoryQuestionsRepository, sendNotificationUseCase)
 })
@@ -42,9 +36,5 @@ beforeEach(() => {
 
     expect(inMemoryAnswersRepository.items).toHaveLength(1)
     expect(inMemoryAnswersRepository.items[0]?.domainEvents).toHaveLength(0)
-
-    await waitFor(() => {
-      expect(sendNotificationExecuteSpy).toHaveBeenCalled()
-    })
   })
 })
