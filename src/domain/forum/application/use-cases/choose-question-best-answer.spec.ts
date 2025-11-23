@@ -7,17 +7,20 @@ import { NotAllowedError } from './errors/not-allowed-error'
 import { InMemoryQuestionsRepository } from '@/test/repository/in-memory-questions-repository'
 import { InMemoryAnswersRepository } from '@/test/repository/in-memory-answers-repository'
 import { InMemoryQuestionAttachmentsRepository } from '@/test/repository/in-memory-question-attachments-repository'
+import { InMemoryAnswerAttachmentsRepository } from '@/test/repository/in-memory-answer-attachments-repository'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let inMemoryAnswersRepository: InMemoryAnswersRepository
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
+let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 let sut: ChooseQuestionBestAnswerUseCase // System Under Test
 
 describe('Choose Question Best Answer', () => {
   beforeEach(() => {
     inMemoryQuestionAttachmentsRepository = new InMemoryQuestionAttachmentsRepository()
     inMemoryQuestionsRepository = new InMemoryQuestionsRepository(inMemoryQuestionAttachmentsRepository)
-    inMemoryAnswersRepository = new InMemoryAnswersRepository()
+    inMemoryAnswerAttachmentsRepository = new InMemoryAnswerAttachmentsRepository()
+    inMemoryAnswersRepository = new InMemoryAnswersRepository(inMemoryAnswerAttachmentsRepository)
     sut = new ChooseQuestionBestAnswerUseCase(
       inMemoryQuestionsRepository,
       inMemoryAnswersRepository,

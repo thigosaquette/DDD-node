@@ -2,13 +2,16 @@ import { InMemoryAnswersRepository } from '@/test/repository/in-memory-answers-r
 import { FetchQuestionAnswersUseCase } from './fetch-question-answers'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { makeQuestion } from '@/test/factories/make-question'
+import { InMemoryAnswerAttachmentsRepository } from '@/test/repository/in-memory-answer-attachments-repository'
 
 let inMemoryAnswersRepository: InMemoryAnswersRepository
+let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 let sut: FetchQuestionAnswersUseCase // System Under Test
 
 describe('Fetch Question Answers', () => {
   beforeEach(() => {
-    inMemoryAnswersRepository = new InMemoryAnswersRepository()
+    inMemoryAnswerAttachmentsRepository = new InMemoryAnswerAttachmentsRepository()
+    inMemoryAnswersRepository = new InMemoryAnswersRepository(inMemoryAnswerAttachmentsRepository)
     sut = new FetchQuestionAnswersUseCase(inMemoryAnswersRepository)
   })
 
