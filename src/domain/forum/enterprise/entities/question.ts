@@ -74,10 +74,14 @@ export class Question extends AggregateRoot<QuestionRequiredProps> {
   }
 
   set bestAnswerId(bestAnswerId: UniqueEntityID | undefined) {
-    if (bestAnswerId && bestAnswerId !== this.requiredProps.bestAnswerId) {
+    if (bestAnswerId === undefined) {
+      return
+    }
+
+    if (this.requiredProps.bestAnswerId === undefined || !this.requiredProps.bestAnswerId.equals(bestAnswerId)) {
       this.addDomainEvent(new QuestionBestAnswerChosenEvent(this, bestAnswerId))
     }
-    
+
     this.requiredProps.bestAnswerId = bestAnswerId
 
     this.touch()
