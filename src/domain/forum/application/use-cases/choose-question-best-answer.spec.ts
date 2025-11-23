@@ -5,6 +5,7 @@ import { makeQuestion } from '@/test/factories/make-question'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 import { faker } from '@faker-js/faker'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let inMemoryAnswersRepository: InMemoryAnswersRepository
@@ -38,12 +39,13 @@ describe('Choose Question Best Answer', () => {
 
     const wrongAuthorId = faker.string.uuid()
 
-    await expect(
-      sut.execute({
-        answerId: answer.id.toString(),
-        authorId: wrongAuthorId,
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      answerId: answer.id.toString(),
+      authorId: wrongAuthorId,
+    })
+
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(result.isLeft()).toBe(true)
   })
 
   it('should not be able to choose best answer from another question', async () => {
@@ -68,12 +70,13 @@ describe('Choose Question Best Answer', () => {
     await inMemoryQuestionsRepository.create(question2)
     await inMemoryAnswersRepository.create(answerFromQuestion2)
 
-    await expect(
-      sut.execute({
-        answerId: answerFromQuestion2.id.toString(),
-        authorId: question1.authorId.toString(),
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      answerId: answerFromQuestion2.id.toString(),
+      authorId: question1.authorId.toString(),
+    })
+
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(result.isLeft()).toBe(true)
   })
 
   it('should be able to choose best answer', async () => {
@@ -92,15 +95,18 @@ describe('Choose Question Best Answer', () => {
     await inMemoryQuestionsRepository.create(question)
     await inMemoryAnswersRepository.create(answer)
 
-    const { question: updatedQuestion } = await sut.execute({
+    const result = await sut.execute({
       answerId: answer.id.toString(),
       authorId: question.authorId.toString(),
     })
 
-    expect(inMemoryQuestionsRepository.items[0]).toMatchObject({
-      bestAnswerId: answer.id,
-    })
-    expect(updatedQuestion.bestAnswerId).toEqual(answer.id)
+    if (result.isRight()) {
+      expect(inMemoryQuestionsRepository.items[0]).toMatchObject({
+        bestAnswerId: answer.id,
+      })
+      expect(result.value.question.bestAnswerId).toEqual(answer.id)
+    }
+    expect(result.isRight()).toBe(true)
   })
 })
 

@@ -3,6 +3,7 @@ import { DeleteQuestionCommentUseCase } from './delete-question-comment'
 import { makeQuestionComment } from '@/test/factories/make-question-comment'
 import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 import { faker } from '@faker-js/faker'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 let sut: DeleteQuestionCommentUseCase // System Under Test
@@ -24,12 +25,13 @@ describe('Delete Question Comment', () => {
 
     const wrongAuthorId = faker.string.uuid()
 
-    await expect(
-      sut.execute({
-        questionCommentId: newQuestionComment.id.toString(),
-        authorId: wrongAuthorId,
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionCommentId: newQuestionComment.id.toString(),
+      authorId: wrongAuthorId,
+    })
+
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(result.isLeft()).toBe(true)
   })
 
   it('should be able to delete a question comment', async () => {
@@ -40,12 +42,13 @@ describe('Delete Question Comment', () => {
 
     await inMemoryQuestionCommentsRepository.create(newQuestionComment)
 
-    await sut.execute({
+    const result = await sut.execute({
       questionCommentId: newQuestionComment.id.toString(),
       authorId: newQuestionComment.authorId.toString(),
     })
 
     expect(inMemoryQuestionCommentsRepository.items).toHaveLength(0)
+    expect(result.isRight()).toBe(true)
   })
 })
 

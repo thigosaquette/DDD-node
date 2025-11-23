@@ -17,13 +17,13 @@ describe('Comment On Answer', () => {
       content: 'New comment content',
     })
 
-    expect(answerComment.id).toBeTruthy()
     expect(inMemoryAnswerCommentsRepository.items[0]).toMatchObject({
       id: answerComment.id,
       authorId: answerComment.authorId,
       answerId: answerComment.answerId,
       content: answerComment.content,
     })
+    expect(answerComment.id).toBeTruthy()
   })
 })
 

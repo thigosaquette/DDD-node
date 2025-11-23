@@ -3,6 +3,7 @@ import { DeleteQuestionUseCase } from './delete-question'
 import { makeQuestion } from '@/test/factories/make-question'
 import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 import { faker } from '@faker-js/faker'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let sut: DeleteQuestionUseCase // System Under Test
@@ -23,12 +24,13 @@ describe('Delete Question', () => {
 
     const wrongAuthorId = faker.string.uuid()
 
-    await expect(
-      sut.execute({
-        questionId: newQuestion.id.toString(),
-        authorId: wrongAuthorId,
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionId: newQuestion.id.toString(),
+      authorId: wrongAuthorId,
+    })
+
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(result.isLeft()).toBe(true)
   })
 
   it('should be able to delete a question', async () => {
@@ -39,11 +41,12 @@ describe('Delete Question', () => {
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
-    await sut.execute({
+    const result = await sut.execute({
       questionId: newQuestion.id.toString(),
       authorId: newQuestion.authorId.toString(),
     })
 
     expect(inMemoryQuestionsRepository.items).toHaveLength(0)
+    expect(result.isRight()).toBe(true)
   })
 })

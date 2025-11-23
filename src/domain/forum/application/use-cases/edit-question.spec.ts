@@ -3,6 +3,7 @@ import { EditQuestionUseCase } from './edit-question'
 import { makeQuestion } from '@/test/factories/make-question'
 import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 import { faker } from '@faker-js/faker'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let sut: EditQuestionUseCase // System Under Test
@@ -23,14 +24,15 @@ describe('Edit Question', () => {
 
     const wrongAuthorId = faker.string.uuid()
 
-    await expect(
-      sut.execute({
-        questionId: newQuestion.id.toString(),
-        authorId: wrongAuthorId,
-        title: 'New title',
-        content: 'New content',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionId: newQuestion.id.toString(),
+      authorId: wrongAuthorId,
+      title: 'New title',
+      content: 'New content',
+    })
+
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(result.isLeft()).toBe(true)
   })
 
   it('should be able to edit a question', async () => {
@@ -44,21 +46,24 @@ describe('Edit Question', () => {
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
-    const { question } = await sut.execute({
+    const result = await sut.execute({
       questionId: newQuestion.id.toString(),
       authorId: newQuestion.authorId.toString(),
       title: 'New title',
       content: 'New content',
     })
 
-    expect(inMemoryQuestionsRepository.items[0]).toMatchObject({
-      title: 'New title',
-      content: 'New content',
-    })
-    expect(question).toMatchObject({
-      title: 'New title',
-      content: 'New content',
-    })
+    if (result.isRight()) {
+      expect(inMemoryQuestionsRepository.items[0]).toMatchObject({
+        title: 'New title',
+        content: 'New content',
+      })
+      expect(result.value.question).toMatchObject({
+        title: 'New title',
+        content: 'New content',
+      })
+    }
+    expect(result.isRight()).toBe(true)
   })
 })
 

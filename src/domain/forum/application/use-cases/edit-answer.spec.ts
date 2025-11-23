@@ -3,6 +3,7 @@ import { EditAnswerUseCase } from './edit-answer'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 import { faker } from '@faker-js/faker'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 let inMemoryAnswersRepository: InMemoryAnswersRepository
 let sut: EditAnswerUseCase // System Under Test
@@ -23,13 +24,14 @@ describe('Edit Answer', () => {
 
     const wrongAuthorId = faker.string.uuid()
 
-    await expect(
-      sut.execute({
-        answerId: newAnswer.id.toString(),
-        authorId: wrongAuthorId,
-        content: 'New content',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      answerId: newAnswer.id.toString(),
+      authorId: wrongAuthorId,
+      content: 'New content',
+    })
+
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(result.isLeft()).toBe(true)
   })
 
   it('should be able to edit a answer', async () => {
@@ -42,18 +44,21 @@ describe('Edit Answer', () => {
 
     await inMemoryAnswersRepository.create(newAnswer)
 
-    const { answer } = await sut.execute({
+    const result = await sut.execute({
       answerId: newAnswer.id.toString(),
       authorId: newAnswer.authorId.toString(),
       content: 'New content',
     })
 
-    expect(inMemoryAnswersRepository.items[0]).toMatchObject({
-      content: 'New content',
-    })
-    expect(answer).toMatchObject({
-      content: 'New content',
-    })
+    if (result.isRight()) {
+      expect(inMemoryAnswersRepository.items[0]).toMatchObject({
+        content: 'New content',
+      })
+      expect(result.value.answer).toMatchObject({
+        content: 'New content',
+      })
+    }
+    expect(result.isRight()).toBe(true)
   })
 })
 

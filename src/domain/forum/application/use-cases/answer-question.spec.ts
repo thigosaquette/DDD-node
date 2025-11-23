@@ -17,12 +17,12 @@ describe('Create Question', () => {
       content: 'New answer content',
     })
 
-    expect(answer.id).toBeTruthy()
     expect(inMemoryAnswersRepository.items[0]).toMatchObject({
       id: answer.id,
       authorId: answer.authorId,
       questionId: answer.questionId,
       content: answer.content,
     })
+    expect(answer.id).toBeTruthy()
   })
 })
