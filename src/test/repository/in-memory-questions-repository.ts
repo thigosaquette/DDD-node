@@ -15,7 +15,7 @@ export class InMemoryQuestionsRepository implements QuestionsRepository {
   }
 
   async save(question: Question): Promise<void> {
-    const itemIndex = this.items.findIndex((item) => item.id === question.id)
+    const itemIndex = this.items.findIndex((item) => item.id.equals(question.id))
 
     if (itemIndex >= 0) {
       this.items[itemIndex] = question
@@ -23,7 +23,7 @@ export class InMemoryQuestionsRepository implements QuestionsRepository {
   }
 
   async delete(question: Question): Promise<void> {
-    const itemIndex = this.items.findIndex((item) => item.id === question.id)
+    const itemIndex = this.items.findIndex((item) => item.id.equals(question.id))
     this.items.splice(itemIndex, 1)
 
     this.questionAttachmentsRepository.deleteManyByQuestionId(question.id.toString())

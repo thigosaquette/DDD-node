@@ -19,7 +19,7 @@ export class InMemoryNotificationsRepository implements NotificationsRepository 
   }
 
   async save(notification: Notification): Promise<void> {
-    const itemIndex = this.items.findIndex((item) => item.id === notification.id)
+    const itemIndex = this.items.findIndex((item) => item.id.equals(notification.id))
 
     if (itemIndex >= 0) {
       this.items[itemIndex] = notification

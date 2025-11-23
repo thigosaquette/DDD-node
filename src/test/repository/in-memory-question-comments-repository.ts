@@ -12,7 +12,7 @@ export class InMemoryQuestionCommentsRepository
   }
 
   async delete(questionComment: QuestionComment): Promise<void> {
-    const itemIndex = this.items.findIndex((item) => item.id === questionComment.id)
+    const itemIndex = this.items.findIndex((item) => item.id.equals(questionComment.id))
 
     this.items.splice(itemIndex, 1)
   }
