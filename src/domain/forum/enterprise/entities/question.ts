@@ -1,8 +1,9 @@
 import { Slug } from './value-objects/slug'
-import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 import dayjs from 'dayjs'
+import { AggregateRoot } from '@/core/entities/aggregate-root'
+import { QuestionAttachmentList } from './question-attachment-list'
 
 export interface QuestionRequiredProps {
   authorId: UniqueEntityID
@@ -10,11 +11,12 @@ export interface QuestionRequiredProps {
   title: string
   slug: Slug
   content: string
-  createdAt: Date
   updatedAt?: Date
+  createdAt: Date
+  attachments: QuestionAttachmentList
 }
 
-export class Question extends Entity<QuestionRequiredProps> {
+export class Question extends AggregateRoot<QuestionRequiredProps> {
   get authorId() {
     return this.requiredProps.authorId
   }
@@ -22,27 +24,31 @@ export class Question extends Entity<QuestionRequiredProps> {
   get bestAnswerId() {
     return this.requiredProps.bestAnswerId
   }
-
+  
   get title() {
     return this.requiredProps.title
   }
-
+  
   get slug() {
     return this.requiredProps.slug
   }
-
+  
   get content() {
     return this.requiredProps.content
+  }
+  
+  get updatedAt() {
+    return this.requiredProps.updatedAt
   }
 
   get createdAt() {
     return this.requiredProps.createdAt
   }
-
-  get updatedAt() {
-    return this.requiredProps.updatedAt
+  
+  get attachments() {
+    return this.requiredProps.attachments
   }
-
+  
   get isNew(): boolean {
     return dayjs().diff(this.requiredProps.createdAt, 'days') <= 3
   }
@@ -71,18 +77,24 @@ export class Question extends Entity<QuestionRequiredProps> {
     this.touch()
   }
 
+  set attachments(attachments: QuestionAttachmentList) {
+    this.requiredProps.attachments = attachments
+    this.touch()
+  }
+
   private touch() {
     this.requiredProps.updatedAt = new Date()
   }
 
   static create(
-    requiredProps: Optional<QuestionRequiredProps, 'slug' | 'createdAt'>,
+    requiredProps: Optional<QuestionRequiredProps, 'slug' | 'createdAt' | 'attachments'>,
     id?: UniqueEntityID,
   ) {
     const question = new Question(
       {
         ...requiredProps,
         slug: requiredProps.slug ?? Slug.createFromText(requiredProps.title),
+        attachments: requiredProps.attachments ?? new QuestionAttachmentList(),
         createdAt: requiredProps.createdAt ?? new Date(),
       },
       id,

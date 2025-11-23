@@ -1,53 +1,50 @@
-import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository'
-import { Question } from '@/domain/forum/enterprise/entities/question'
+import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository'
+import { Answer } from '@/domain/forum/enterprise/entities/answer'
 import { PaginationParams } from '@/core/repositories/pagination-params'
 
-export class InMemoryQuestionsRepository implements QuestionsRepository {
-  public items: Question[] = []
+export class InMemoryAnswersRepository implements AnswersRepository {
+  public items: Answer[] = []
 
-  async create(question: Question) {
-    this.items.push(question)
+  async create(answer: Answer): Promise<void> {
+    this.items.push(answer)
   }
 
-  async save(question: Question): Promise<void> {
-    const itemIndex = this.items.findIndex((item) => item.id === question.id)
+  async save(answer: Answer): Promise<void> {
+    const itemIndex = this.items.findIndex((item) => item.id === answer.id)
 
     if (itemIndex >= 0) {
-      this.items[itemIndex] = question
+      this.items[itemIndex] = answer
     }
   }
 
-  async delete(question: Question): Promise<void> {
-    const itemIndex = this.items.findIndex((item) => item.id === question.id)
+  async delete(answer: Answer): Promise<void> {
+    const itemIndex = this.items.findIndex((item) => item.id === answer.id)
 
     this.items.splice(itemIndex, 1)
   }
 
-  async findById(id: string): Promise<Question | null> {
-    const question = this.items.find((item) => item.id.toString() === id)
+  async findById(id: string): Promise<Answer | null> {
+    const answer = this.items.find((item) => item.id.toString() === id)
 
-    if (!question) {
+    if (!answer) {
       return null
     }
 
-    return question
+    return answer
   }
 
-  async findBySlug(slug: string): Promise<Question | null> {
-    const question = this.items.find((item) => item.slug.value === slug)
+  async findManyByQuestionId(
+    questionId: string,
+    { page, itemsPerPage }: PaginationParams,
+  ): Promise<Answer[]> {
+    const answers = this.items.filter(
+      (item) => item.questionId.toString() === questionId,
+    )
 
-    if (!question) {
-      return null
-    }
-
-    return question
-  }
-
-  async findManyRecent({ page, itemsPerPage }: PaginationParams): Promise<Question[]> {
     const startIndex = (page - 1) * itemsPerPage
     const endIndex = startIndex + itemsPerPage
 
-    return this.items
+    return answers
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(startIndex, endIndex)
   }

@@ -1,19 +1,22 @@
-import { InMemoryQuestionsRepository } from '@/test/repository/in-memory-answers-repository'
-import { InMemoryAnswersRepository } from '@/test/repository/in-memory-questions-repository copy'
 import { ChooseQuestionBestAnswerUseCase } from './choose-question-best-answer'
 import { makeQuestion } from '@/test/factories/make-question'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 import { faker } from '@faker-js/faker'
 import { NotAllowedError } from './errors/not-allowed-error'
+import { InMemoryQuestionsRepository } from '@/test/repository/in-memory-questions-repository'
+import { InMemoryAnswersRepository } from '@/test/repository/in-memory-answers-repository'
+import { InMemoryQuestionAttachmentsRepository } from '@/test/repository/in-memory-question-attachments-repository'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let inMemoryAnswersRepository: InMemoryAnswersRepository
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let sut: ChooseQuestionBestAnswerUseCase // System Under Test
 
 describe('Choose Question Best Answer', () => {
   beforeEach(() => {
-    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+    inMemoryQuestionAttachmentsRepository = new InMemoryQuestionAttachmentsRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(inMemoryQuestionAttachmentsRepository)
     inMemoryAnswersRepository = new InMemoryAnswersRepository()
     sut = new ChooseQuestionBestAnswerUseCase(
       inMemoryQuestionsRepository,

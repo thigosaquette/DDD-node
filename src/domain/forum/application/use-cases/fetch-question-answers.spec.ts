@@ -1,4 +1,4 @@
-import { InMemoryAnswersRepository } from '@/test/repository/in-memory-questions-repository copy'
+import { InMemoryAnswersRepository } from '@/test/repository/in-memory-answers-repository'
 import { FetchQuestionAnswersUseCase } from './fetch-question-answers'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { makeQuestion } from '@/test/factories/make-question'

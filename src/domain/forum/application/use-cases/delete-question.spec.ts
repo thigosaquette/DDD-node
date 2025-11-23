@@ -1,16 +1,20 @@
-import { InMemoryQuestionsRepository } from '@/test/repository/in-memory-answers-repository'
+import { InMemoryQuestionsRepository } from '@/test/repository/in-memory-questions-repository'
 import { DeleteQuestionUseCase } from './delete-question'
 import { makeQuestion } from '@/test/factories/make-question'
 import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 import { faker } from '@faker-js/faker'
 import { NotAllowedError } from './errors/not-allowed-error'
+import { InMemoryQuestionAttachmentsRepository } from '@/test/repository/in-memory-question-attachments-repository'
+import { makeQuestionAttachment } from '@/test/factories/make-question-attachment'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let sut: DeleteQuestionUseCase // System Under Test
 
 describe('Delete Question', () => {
   beforeEach(() => {
-    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+    inMemoryQuestionAttachmentsRepository = new InMemoryQuestionAttachmentsRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(inMemoryQuestionAttachmentsRepository)
     sut = new DeleteQuestionUseCase(inMemoryQuestionsRepository)
   })
 
@@ -29,6 +33,7 @@ describe('Delete Question', () => {
       authorId: wrongAuthorId,
     })
 
+    expect(inMemoryQuestionAttachmentsRepository.items).toHaveLength(0)
     expect(result.value).toBeInstanceOf(NotAllowedError)
     expect(result.isLeft()).toBe(true)
   })
@@ -41,12 +46,24 @@ describe('Delete Question', () => {
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
+    inMemoryQuestionAttachmentsRepository.items.push(
+      makeQuestionAttachment({
+        questionId: newQuestion.id,
+        attachmentId: new UniqueEntityID(faker.string.uuid()),
+      }),
+      makeQuestionAttachment({
+        questionId: newQuestion.id,
+        attachmentId: new UniqueEntityID(faker.string.uuid()),
+      }),
+    )
+
     const result = await sut.execute({
       questionId: newQuestion.id.toString(),
       authorId: newQuestion.authorId.toString(),
     })
 
     expect(inMemoryQuestionsRepository.items).toHaveLength(0)
+    expect(inMemoryQuestionAttachmentsRepository.items).toHaveLength(0)
     expect(result.isRight()).toBe(true)
   })
 })
