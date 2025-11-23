@@ -3,7 +3,7 @@ import { DeleteQuestionCommentUseCase } from './delete-question-comment'
 import { makeQuestionComment } from '@/test/factories/make-question-comment'
 import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 import { faker } from '@faker-js/faker'
-import { NotAllowedError } from './errors/not-allowed-error'
+import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 
 let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 let sut: DeleteQuestionCommentUseCase // System Under Test

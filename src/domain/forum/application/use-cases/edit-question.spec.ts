@@ -3,7 +3,7 @@ import { EditQuestionUseCase } from './edit-question'
 import { makeQuestion } from '@/test/factories/make-question'
 import { UniqueEntityID } from '@/core/value-objects/unique-entity-id'
 import { faker } from '@faker-js/faker'
-import { NotAllowedError } from './errors/not-allowed-error'
+import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 import { InMemoryQuestionAttachmentsRepository } from '@/test/repository/in-memory-question-attachments-repository'
 import { makeQuestionAttachment } from '@/test/factories/make-question-attachment'
 

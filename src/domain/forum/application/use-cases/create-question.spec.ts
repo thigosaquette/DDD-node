@@ -15,28 +15,33 @@ describe('Create Question', () => {
   })
 
   it('should be able to create a question', async () => {
-    const { question } = await sut.execute({
+    const result = await sut.execute({
       authorId: '1',
       title: 'New question',
       content: 'New question content',
       attachmentsIds: ['1', '2'],
     })
 
-    expect(inMemoryQuestionsRepository.items[0]).toMatchObject({
-      id: question.id,
-      authorId: question.authorId,
-      title: question.title,
-      content: question.content,
-      attachments: question.attachments,
-    })
-    expect(inMemoryQuestionsRepository.items[0]?.attachments.currentItems).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        attachmentId: new UniqueEntityID('1'),
-      }),
-      expect.objectContaining({
-        attachmentId: new UniqueEntityID('2'),
-      }),
-    ]))
-    expect(question.id).toBeTruthy()
+    if (result.isRight()) {
+      const { question } = result.value
+
+      expect(inMemoryQuestionsRepository.items[0]).toMatchObject({
+        id: question.id,
+        authorId: question.authorId,
+        title: question.title,
+        content: question.content,
+        attachments: question.attachments,
+      })
+      expect(inMemoryQuestionsRepository.items[0]?.attachments.currentItems).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          attachmentId: new UniqueEntityID('1'),
+        }),
+        expect.objectContaining({
+          attachmentId: new UniqueEntityID('2'),
+        }),
+      ]))
+      expect(question.id).toBeTruthy()
+    }
+    expect(result.isRight()).toBe(true)
   })
 })

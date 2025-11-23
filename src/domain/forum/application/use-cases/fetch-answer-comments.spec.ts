@@ -31,19 +31,26 @@ describe('Fetch Answer Comments', () => {
       }),
     )
 
-    const { answerComments: page1 } = await sut.execute({
+    const result1 = await sut.execute({
       answerId: answer.id.toString(),
       page: 1,
       itemsPerPage: 20,
     })
-    const { answerComments: page2 } = await sut.execute({
+    const result2 = await sut.execute({
       answerId: answer.id.toString(),
       page: 2,
       itemsPerPage: 20,
     })
 
-    expect(page1).toHaveLength(20)
-    expect(page2).toHaveLength(2)
+    if (result1.isRight() && result2.isRight()) {
+      const { answerComments: page1 } = result1.value
+      const { answerComments: page2 } = result2.value
+
+      expect(page1).toHaveLength(20)
+      expect(page2).toHaveLength(2)
+    }
+    expect(result1.isRight()).toBe(true)
+    expect(result2.isRight()).toBe(true)
   })
 
   it('should be able to fetch answer comments ordered by creation date', async () => {
@@ -68,17 +75,22 @@ describe('Fetch Answer Comments', () => {
       }),
     )
 
-    const { answerComments } = await sut.execute({
+    const result = await sut.execute({
       answerId: answer.id.toString(),
       page: 1,
       itemsPerPage: 3,
     })
 
-    expect(answerComments).toEqual([
-      expect.objectContaining({ createdAt: new Date(2024, 0, 23) }),
-      expect.objectContaining({ createdAt: new Date(2024, 0, 20) }),
-      expect.objectContaining({ createdAt: new Date(2024, 0, 18) }),
-    ])
+    if (result.isRight()) {
+      const { answerComments } = result.value
+
+      expect(answerComments).toEqual([
+        expect.objectContaining({ createdAt: new Date(2024, 0, 23) }),
+        expect.objectContaining({ createdAt: new Date(2024, 0, 20) }),
+        expect.objectContaining({ createdAt: new Date(2024, 0, 18) }),
+      ])
+    }
+    expect(result.isRight()).toBe(true)
   })
 })
 

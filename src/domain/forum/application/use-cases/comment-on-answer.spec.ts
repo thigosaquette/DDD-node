@@ -11,19 +11,24 @@ describe('Comment On Answer', () => {
   })
 
   it('should be able to comment on answer', async () => {
-    const { answerComment } = await sut.execute({
+    const result = await sut.execute({
       authorId: '1',
       answerId: '1',
       content: 'New comment content',
     })
 
-    expect(inMemoryAnswerCommentsRepository.items[0]).toMatchObject({
-      id: answerComment.id,
-      authorId: answerComment.authorId,
-      answerId: answerComment.answerId,
-      content: answerComment.content,
-    })
-    expect(answerComment.id).toBeTruthy()
+    if (result.isRight()) {
+      const { answerComment } = result.value
+
+      expect(inMemoryAnswerCommentsRepository.items[0]).toMatchObject({
+        id: answerComment.id,
+        authorId: answerComment.authorId,
+        answerId: answerComment.answerId,
+        content: answerComment.content,
+      })
+      expect(answerComment.id).toBeTruthy()
+    }
+    expect(result.isRight()).toBe(true)
   })
 })
 
